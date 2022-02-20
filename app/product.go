@@ -3,7 +3,7 @@ package app
 import (
     "errors"
     "github.com/asaskevich/govalidator"
-	uuid "github.com/satori/go.uuid"
+    uuid "github.com/satori/go.uuid"
 )
 
 func init() {
@@ -22,20 +22,27 @@ type ProductInterface interface {
 
 const (
     DISABLED = "disabled"
-    ENABLED = "enabled"
+    ENABLED  = "enabled"
 )
+
+type Product struct {
+    ID     string  `valid:"uuidv4"`
+    Name   string  `valid:"required"`
+    Price  float64 `valid:"float,optional"`
+    Status string  `valid:"required"`
+}
 
 func NewProduct() *Product {
     product := &Product{
-        ID: uuid.NewV4().String(),
-        Status: DISABLED
+        ID:     uuid.NewV4().String(),
+        Status: DISABLED,
     }
 
     return product
 }
 
 func (p *Product) Disable() error {
-    if p.Price === 0 {
+    if p.Price == 0 {
         p.Status = DISABLED
 
         return nil
@@ -47,7 +54,7 @@ func (p *Product) Disable() error {
 func (p *Product) Enable() error {
     if p.Price > 0 {
         p.Status = ENABLED
-        
+
         return nil
     }
 
@@ -72,7 +79,7 @@ func (p *Product) GetStatus() string {
 
 func (p *Product) IsValid() (bool, error) {
     if p.Status == "" {
-        p.Status DISABLED
+        p.Status = DISABLED
     }
 
     if p.Status != ENABLED && p.Status != DISABLED {
