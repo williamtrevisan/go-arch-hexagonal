@@ -34,8 +34,8 @@ func (p *ProductDb) Save(product app.ProductInterface) (app.ProductInterface, er
     var rows int
 
     p.db.QueryRow("SELECT id FROM products WHERE id = ?", product.GetID()).Scan(&rows)
-    if rows > 0 {
-        _, err := p.update(product)
+    if rows == 0 {
+        _, err := p.create(product)
         if err != nil {
             return nil, err
         }
@@ -43,7 +43,7 @@ func (p *ProductDb) Save(product app.ProductInterface) (app.ProductInterface, er
         return product, nil
     }
 
-    _, err := p.create(product)
+    _, err := p.update(product)
     if err != nil {
         return nil, err
     }
@@ -53,7 +53,7 @@ func (p *ProductDb) Save(product app.ProductInterface) (app.ProductInterface, er
 
 func (p *ProductDb) create(product app.ProductInterface) (app.ProductInterface, error) {
     _, err := p.db.Exec(
-        "INSERT INTO products(id, name, price, status) VALUES(?. ?. ?. ?)",
+        "INSERT INTO products(id, name, price, status) VALUES(?, ?, ?, ?)",
         product.GetID(),
         product.GetName(),
         product.GetPrice(),
