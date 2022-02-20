@@ -20,6 +20,26 @@ type ProductInterface interface {
     IsValid() (bool, error)
 }
 
+type ProductServiceInterface interface {
+    Create(name string, price float64) (ProductInterface, error)
+    Disable(product ProductInterface) (ProductInterface, error)
+    Enable(product ProductInterface) (ProductInterface, error)
+    Get(id string) (ProductInterface, error)
+}
+
+type ProductReader interface {
+    Get(id string) (ProductInterface, error)
+}
+
+type ProductWriter interface {
+    Save(product ProductInterface) (ProductInterface, error)
+}
+
+type ProductPersistenceInterface interface {
+    ProductReader
+    ProductWriter
+}
+
 const (
     DISABLED = "disabled"
     ENABLED  = "enabled"
