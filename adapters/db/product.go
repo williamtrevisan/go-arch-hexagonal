@@ -33,32 +33,42 @@ func (p *ProductDb) Get(id string) (app.ProductInterface, error) {
 func (p *ProductDb) Save(product app.ProductInterface) (app.ProductInterface, error) {
     var rows int
 
-    p.db.QueryRow("SELECT id FROM products WHERE id = ?", product.GetID()).Scan(&rows)
+    p.db.QueryRow("Select id from products where id=?", product.GetID()).Scan(&rows)
     if rows == 0 {
         _, err := p.create(product)
         if err != nil {
             return nil, err
         }
-
-        return product, nil
-    }
-
-    _, err := p.update(product)
-    if err != nil {
-        return nil, err
+    } else {
+        _, err := p.update(product)
+        if err != nil {
+            return nil, err
+        }
     }
 
     return product, nil
 }
 
 func (p *ProductDb) create(product app.ProductInterface) (app.ProductInterface, error) {
-    _, err := p.db.Exec(
-        "INSERT INTO products(id, name, price, status) VALUES(?, ?, ?, ?)",
+    stmt, err := p.db.Prepare(`
+        INSERT INTO products(id, name, price, status) 
+        VALUES(?, ?, ?, ?)
+    `)
+    if err != nil {
+        return nil, err
+    }
+
+    _, err = stmt.Exec(
         product.GetID(),
         product.GetName(),
         product.GetPrice(),
         product.GetStatus(),
     )
+    if err != nil {
+        return nil, err
+    }
+
+    err = stmt.Close()
     if err != nil {
         return nil, err
     }
@@ -68,7 +78,7 @@ func (p *ProductDb) create(product app.ProductInterface) (app.ProductInterface, 
 
 func (p *ProductDb) update(product app.ProductInterface) (app.ProductInterface, error) {
     _, err := p.db.Exec(
-        "UPDATE products SET name = ?, price = ?, status = ? WHERE id = ?",
+        "update products set name = ?, price=?, status=? where id = ?",
         product.GetName(),
         product.GetPrice(),
         product.GetStatus(),
@@ -77,6 +87,6 @@ func (p *ProductDb) update(product app.ProductInterface) (app.ProductInterface, 
     if err != nil {
         return nil, err
     }
-
+    
     return product, nil
 }
