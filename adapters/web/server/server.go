@@ -3,6 +3,7 @@ package server
 import (
     "github.com/codegangsta/negroni"
     "github.com/gorilla/mux"
+    "github.com/williamtrevisan/go-arch-hexagonal/adapters/web/handlers"
     "github.com/williamtrevisan/go-arch-hexagonal/app"
     "log"
     "net/http"
@@ -24,7 +25,7 @@ func (w Webserver) Serve() {
         negroni.NewLogger(),
     )
 
-    handler.MakeProductHandlers(r, n, w.Service)
+    handlers.MakeProductHandlers(r, n, w.Service)
 
     http.Handle("/", r)
 

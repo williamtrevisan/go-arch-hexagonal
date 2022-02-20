@@ -35,21 +35,24 @@ func createProduct(service app.ProductServiceInterface) http.Handler {
 
         err := json.NewDecoder(r.Body).Decode(&productDto)
         if err != nil {
-            returnInternalServerError(w)
+            w.WriteHeader(http.StatusInternalServerError)
+            w.Write(jsonError(err.Error()))
 
             return
         }
 
         product, err := service.Create(productDto.Name, productDto.Price)
         if err != nil {
-            returnInternalServerError(w)
+            w.WriteHeader(http.StatusInternalServerError)
+            w.Write(jsonError(err.Error()))
 
             return
         }
 
         err = json.NewEncoder(w).Encode(product)
         if err != nil {
-            returnInternalServerError(w)
+            w.WriteHeader(http.StatusInternalServerError)
+            w.Write(jsonError(err.Error()))
 
             return
         }
@@ -72,7 +75,8 @@ func getProduct(service app.ProductServiceInterface) http.Handler {
 
         err = json.NewEncoder(w).Encode(product)
         if err != nil {
-            returnInternalServerError(w)
+            w.WriteHeader(http.StatusInternalServerError)
+            w.Write(jsonError(err.Error()))
 
             return
         }
@@ -95,14 +99,16 @@ func enableProduct(service app.ProductServiceInterface) http.Handler {
 
         result, err := service.Enable(product)
         if err != nil {
-            returnInternalServerError(w)
+            w.WriteHeader(http.StatusInternalServerError)
+            w.Write(jsonError(err.Error()))
 
             return
         }
 
         err = json.NewEncoder(w).Encode(result)
         if err != nil {
-            returnInternalServerError(w)
+            w.WriteHeader(http.StatusInternalServerError)
+            w.Write(jsonError(err.Error()))
 
             return
         }
@@ -125,21 +131,18 @@ func disableProduct(service app.ProductServiceInterface) http.Handler {
 
         result, err := service.Disable(product)
         if err != nil {
-            returnInternalServerError(w)
+            w.WriteHeader(http.StatusInternalServerError)
+            w.Write(jsonError(err.Error()))
 
             return
         }
 
         err = json.NewEncoder(w).Encode(result)
         if err != nil {
-            returnInternalServerError(w)
+            w.WriteHeader(http.StatusInternalServerError)
+            w.Write(jsonError(err.Error()))
 
             return
         }
     })
-}
-
-func returnInternalServerError(w http.ResponseWriter) {
-    w.WriteHeader(http.StatusInternalServerError)
-    w.Write(jsonError(err.Error()))
 }

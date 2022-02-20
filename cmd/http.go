@@ -16,7 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+    "fmt"
     "github.com/spf13/cobra"
+    server2 "github.com/williamtrevisan/go-arch-hexagonal/adapters/web/server"
 )
 
 // httpCmd represents the http command
@@ -30,7 +32,12 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
     Run: func(cmd *cobra.Command, args []string) {
-        server := MakeNew
+        server := server2.NewWebserver()
+        server.Service = &productService
+
+        fmt.Println("Webserver has been started.")
+
+        server.Serve()
     },
 }
 
